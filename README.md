@@ -34,8 +34,45 @@ A Dockerized Caddy reverse proxy with automatic SSL certificate generation for l
 
 4. Install the CA certificate (one-time):
 
+   Replace `local.example.com` with your configured domain.
+
+   **macOS:**
+
    ```bash
    sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain ./certs/local.example.com.rootCA.pem
+   ```
+
+   **Linux (Debian/Ubuntu):**
+
+   ```bash
+   sudo cp ./certs/local.example.com.rootCA.pem /usr/local/share/ca-certificates/local.example.com.crt
+   sudo update-ca-certificates
+   ```
+
+   **Linux (Fedora/RHEL):**
+
+   ```bash
+   sudo cp ./certs/local.example.com.rootCA.pem /etc/pki/ca-trust/source/anchors/local.example.com.pem
+   sudo update-ca-trust
+   ```
+
+   **Linux (Arch):**
+
+   ```bash
+   sudo trust anchor ./certs/local.example.com.rootCA.pem
+   ```
+
+   **Windows (PowerShell as Administrator):**
+
+   ```powershell
+   Import-Certificate -FilePath .\certs\local.example.com.rootCA.pem -CertStoreLocation Cert:\LocalMachine\Root
+   ```
+
+   If `.pem` import fails, convert to `.cer` first:
+
+   ```powershell
+   openssl x509 -in .\certs\local.example.com.rootCA.pem -out .\certs\local.example.com.rootCA.cer
+   Import-Certificate -FilePath .\certs\local.example.com.rootCA.cer -CertStoreLocation Cert:\LocalMachine\Root
    ```
 
 5. Start the proxy:
@@ -50,10 +87,10 @@ Note (Linux): Requires Docker Engine 20.10+ for `host-gateway` support.
 
 ## Configuration
 
-| Variable        | Default     | Description            |
-| --------------- | ----------- | ---------------------- |
-| `DOMAIN`        | `localhost` | Domain for SSL cert    |
-| `UPSTREAM_URL`  | `http://host.docker.internal:3000` | URL for your local app |
+| Variable       | Default                            | Description            |
+| -------------- | ---------------------------------- | ---------------------- |
+| `DOMAIN`       | `localhost`                        | Domain for SSL cert    |
+| `UPSTREAM_URL` | `http://host.docker.internal:3000` | URL for your local app |
 
 ## Ports
 
