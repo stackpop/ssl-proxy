@@ -37,6 +37,7 @@ sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keyc
 ## Configuration
 
 Environment variables (set in `.env`):
+
 - `DOMAIN` - Domain name for SSL cert (default: `localhost`)
 - `UPSTREAM_URL` - URL for your local app (default: `http://host.docker.internal:3000`)
 
