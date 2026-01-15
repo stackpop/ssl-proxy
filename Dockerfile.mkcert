@@ -1,0 +1,18 @@
+FROM alpine:3.19
+
+ARG MKCERT_VERSION=1.4.4
+
+RUN apk add --no-cache ca-certificates nss-tools curl \
+    && ARCH=$(uname -m) \
+    && case "$ARCH" in \
+         aarch64) MKCERT_ARCH="linux-arm64" ;; \
+         x86_64) MKCERT_ARCH="linux-amd64" ;; \
+         *) echo "Unsupported architecture: $ARCH" && exit 1 ;; \
+       esac \
+    && curl -L "https://github.com/FiloSottile/mkcert/releases/download/v${MKCERT_VERSION}/mkcert-v${MKCERT_VERSION}-${MKCERT_ARCH}" -o /usr/local/bin/mkcert \
+    && chmod +x /usr/local/bin/mkcert
+
+COPY scripts/mkcert/entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
+ENTRYPOINT ["/entrypoint.sh"]
