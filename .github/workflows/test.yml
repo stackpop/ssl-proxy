@@ -1,0 +1,63 @@
+name: Test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Start mock upstream
+        run: |
+          docker run -d --name upstream -p 3000:80 nginx:alpine
+          sleep 2
+
+      - name: Create .env
+        run: |
+          echo "DOMAIN=localhost" > .env
+          echo "UPSTREAM_URL=http://host.docker.internal:3000" >> .env
+
+      - name: Build images
+        run: docker-compose build
+
+      - name: Generate certificates
+        run: docker-compose --profile setup run --rm mkcert
+
+      - name: Verify certificates exist
+        run: |
+          test -f certs/localhost.pem
+          test -f certs/localhost.key.pem
+          test -f certs/localhost.rootCA.pem
+
+      - name: Start proxy
+        run: docker-compose up -d
+
+      - name: Wait for Caddy to start
+        run: sleep 3
+
+      - name: Check Caddy is running
+        run: docker-compose ps caddy | grep -q "running"
+
+      - name: Test HTTP redirect
+        run: |
+          curl -s -o /dev/null -w "%{http_code}" http://localhost:8080 | grep -q "301\|308"
+
+      - name: Test HTTPS proxies to upstream
+        run: |
+          curl -s --cacert certs/localhost.rootCA.pem https://localhost:8443 | grep -q "nginx"
+
+      - name: Show logs on failure
+        if: failure()
+        run: docker-compose logs
+
+      - name: Stop proxy
+        if: always()
+        run: |
+          docker-compose down
+          docker rm -f upstream || true
