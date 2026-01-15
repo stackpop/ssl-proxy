@@ -1,0 +1,36 @@
+services:
+  mkcert:
+    build:
+      context: .
+      dockerfile: Dockerfile.mkcert
+    container_name: mkcert
+    profiles:
+      - setup
+    environment:
+      - DOMAIN=${DOMAIN:-localhost}
+    volumes:
+      - ./certs:/certs
+
+  caddy:
+    build:
+      context: .
+      dockerfile: Dockerfile.caddy
+    container_name: ssl-proxy
+    ports:
+      - "8080:80"
+      - "8443:443"
+    environment:
+      - DOMAIN=${DOMAIN:-localhost}
+      - UPSTREAM_URL=${UPSTREAM_URL:-http://host.docker.internal:3000}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - ./config/Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./certs:/etc/caddy/certs:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    restart: unless-stopped
+
+volumes:
+  caddy_data:
+  caddy_config:
