@@ -24,10 +24,10 @@ jobs:
           echo "UPSTREAM_URL=http://host.docker.internal:3000" >> .env
 
       - name: Build images
-        run: docker-compose build
+        run: docker compose build
 
       - name: Generate certificates
-        run: docker-compose --profile setup run --rm mkcert
+        run: docker compose --profile setup run --rm mkcert
 
       - name: Verify certificates exist
         run: |
@@ -36,13 +36,13 @@ jobs:
           test -f certs/localhost.rootCA.pem
 
       - name: Start proxy
-        run: docker-compose up -d
+        run: docker compose up -d
 
       - name: Wait for Caddy to start
         run: sleep 3
 
       - name: Check Caddy is running
-        run: docker-compose ps caddy | grep -q "running"
+        run: docker compose ps caddy | grep -q "running"
 
       - name: Test HTTP redirect
         run: |
@@ -54,10 +54,10 @@ jobs:
 
       - name: Show logs on failure
         if: failure()
-        run: docker-compose logs
+        run: docker compose logs
 
       - name: Stop proxy
         if: always()
         run: |
-          docker-compose down
+          docker compose down
           docker rm -f upstream || true
