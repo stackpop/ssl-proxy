@@ -42,7 +42,7 @@ jobs:
         run: sleep 3
 
       - name: Check Caddy is running
-        run: docker compose ps caddy | grep -q "running"
+        run: docker compose ps --format json | jq -e '.[] | select(.Name == "ssl-proxy") | .State == "running"'
 
       - name: Test HTTP redirect
         run: |
