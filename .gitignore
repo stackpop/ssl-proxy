@@ -1,0 +1,11 @@
+# SSL certificates
+certs/
+
+# OS files
+.DS_Store
+
+# env files
+.env
+
+# AI agents
+.claude/
