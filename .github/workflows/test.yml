@@ -8,6 +8,9 @@ on:
 
 env:
   DOMAIN: sslproxy.stackpop.com
+  HTTP_PORT: 9080
+  HTTPS_PORT: 9443
+  UPSTREAM_URL: http://host.docker.internal:3000
 
 jobs:
   test:
@@ -24,7 +27,9 @@ jobs:
       - name: Create .env
         run: |
           echo "DOMAIN=${{ env.DOMAIN }}" > .env
-          echo "UPSTREAM_URL=http://host.docker.internal:3000" >> .env
+          echo "HTTP_PORT=${{ env.HTTP_PORT }}" >> .env
+          echo "HTTPS_PORT=${{ env.HTTPS_PORT }}" >> .env
+          echo "UPSTREAM_URL=${{ env.UPSTREAM_URL }}" >> .env
 
       - name: Add test domain to hosts
         run: echo "127.0.0.1 ${{ env.DOMAIN }}" | sudo tee -a /etc/hosts
@@ -52,12 +57,11 @@ jobs:
 
       - name: Test HTTP redirect
         run: |
-          curl -s -o /dev/null -w "%{http_code}" http://${{ env.DOMAIN }}:8080 | grep -q "301\|308"
+          curl -s -o /dev/null -w "%{http_code}" http://${{ env.DOMAIN }}:${{ env.HTTP_PORT }} | grep -q "301\|308"
 
       - name: Test HTTPS proxies to upstream
         run: |
-          curl -s --cacert certs/${{ env.DOMAIN }}.rootCA.pem https://${{ env.DOMAIN }}:8443 | grep -q "nginx"
-
+          curl -s --cacert certs/${{ env.DOMAIN }}.rootCA.pem https://${{ env.DOMAIN }}:${{ env.HTTPS_PORT }} | grep -q "nginx"
       - name: Show logs on failure
         if: failure()
         run: docker compose logs
