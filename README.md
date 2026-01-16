@@ -101,12 +101,14 @@ Note (Linux): Requires Docker Engine 20.10+ for `host-gateway` support.
 | Variable       | Default                            | Description            |
 | -------------- | ---------------------------------- | ---------------------- |
 | `DOMAIN`       | `localhost`                        | Domain for SSL cert    |
+| `HTTP_PORT`    | `8080`                             | HTTP port (redirects)  |
+| `HTTPS_PORT`   | `8443`                             | HTTPS port (proxy)     |
 | `UPSTREAM_URL` | `http://host.docker.internal:3000` | URL for your local app |
 
 ## Ports
 
-- `8080` - HTTP (redirects to HTTPS)
-- `8443` - HTTPS
+- `HTTP_PORT` (default `8080`) - HTTP (redirects to HTTPS)
+- `HTTPS_PORT` (default `8443`) - HTTPS
 
 ## Layout
 

@@ -40,6 +40,8 @@ Environment variables (set in `.env`):
 
 - `DOMAIN` - Domain name for SSL cert (default: `localhost`)
 - `UPSTREAM_URL` - URL for your local app (default: `http://host.docker.internal:3000`)
+- `HTTP_PORT` - HTTP port for redirects (default: `8080`)
+- `HTTPS_PORT` - HTTPS port for proxy (default: `8443`)
 
 ## Files
 
@@ -51,5 +53,5 @@ Environment variables (set in `.env`):
 
 ## Ports
 
-- `8080` → HTTP (redirects to HTTPS on 8443)
-- `8443` → HTTPS (proxies to `${UPSTREAM_URL}`)
+- `${HTTP_PORT}` (default `8080`) → HTTP (redirects to HTTPS)
+- `${HTTPS_PORT}` (default `8443`) → HTTPS (proxies to `${UPSTREAM_URL}`)

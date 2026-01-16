@@ -17,11 +17,12 @@ services:
       dockerfile: Dockerfile.caddy
     container_name: ssl-proxy
     ports:
-      - "8080:80"
-      - "8443:443"
+      - "${HTTP_PORT:-8080}:80"
+      - "${HTTPS_PORT:-8443}:443"
     environment:
       - DOMAIN=${DOMAIN:-localhost}
       - UPSTREAM_URL=${UPSTREAM_URL:-http://host.docker.internal:3000}
+      - HTTPS_PORT=${HTTPS_PORT:-8443}
     extra_hosts:
       - "host.docker.internal:host-gateway"
     volumes:

@@ -1,5 +1,5 @@
 :80 {
-    redir https://{$DOMAIN:localhost}:8443{uri} permanent
+    redir https://{$DOMAIN:localhost}:{$HTTPS_PORT:8443}{uri} permanent
 }
 
 {$DOMAIN:localhost} {
