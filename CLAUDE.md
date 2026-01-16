@@ -16,19 +16,19 @@ A Caddy-based reverse proxy for local development with automatic SSL certificate
 
 ```bash
 # Generate certificates (first time only)
-docker-compose --profile setup run --rm mkcert
+docker compose --profile setup run --rm mkcert
 
 # Start the proxy
-docker-compose up -d --build
+docker compose up -d --build
 
 # View logs
-docker-compose logs -f caddy
+docker compose logs -f caddy
 
 # Stop the proxy
-docker-compose down
+docker compose down
 
 # Regenerate certificates
-rm -rf certs/* && docker-compose --profile setup run --rm mkcert
+rm -rf certs/* && docker compose --profile setup run --rm mkcert
 
 # Install CA on macOS
 sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain ./certs/${DOMAIN}.rootCA.pem

@@ -18,18 +18,29 @@ A Dockerized Caddy reverse proxy with automatic SSL certificate generation for l
    UPSTREAM_URL=http://host.docker.internal:3000
    ```
 
-   `UPSTREAM_URL` must include the scheme and port.
+> [!WARNING]  
+> `UPSTREAM_URL` must include the scheme and port.
 
-2. Add to `/etc/hosts`:
+2. Add your domain to the hosts file:
 
+   **macOS/Linux:**
+   Edit `/etc/hosts`
+
+   ```bash
+   sudo sh -c 'echo "127.0.0.1 local.example.com" >> /etc/hosts'
    ```
-   127.0.0.1 local.example.com
+
+   **Windows (PowerShell as Administrator):**
+   Edit `C:\Windows\System32\drivers\etc\hosts`
+
+   ```powershell
+   Add-Content -Path C:\Windows\System32\drivers\etc\hosts -Value "127.0.0.1 local.example.com"
    ```
 
 3. Generate certificates (first time only):
 
    ```bash
-   docker-compose --profile setup run --rm mkcert
+   docker compose --profile setup run --rm mkcert
    ```
 
 4. Install the CA certificate (one-time):
