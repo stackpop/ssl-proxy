@@ -23,12 +23,16 @@ A Dockerized Caddy reverse proxy with automatic SSL certificate generation for l
 
 2. Add your domain to the hosts file:
 
-   **macOS/Linux:** Edit `/etc/hosts`
+   **macOS/Linux:**
+   Edit `/etc/hosts`
+
    ```bash
    sudo sh -c 'echo "127.0.0.1 local.example.com" >> /etc/hosts'
    ```
 
-   **Windows (PowerShell as Administrator):** Edit `C:\Windows\System32\drivers\etc\hosts`
+   **Windows (PowerShell as Administrator):**
+   Edit `C:\Windows\System32\drivers\etc\hosts`
+
    ```powershell
    Add-Content -Path C:\Windows\System32\drivers\etc\hosts -Value "127.0.0.1 local.example.com"
    ```
