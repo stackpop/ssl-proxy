@@ -89,7 +89,7 @@ A Dockerized Caddy reverse proxy with automatic SSL certificate generation for l
 5. Start the proxy:
 
    ```bash
-   docker-compose up -d
+   docker compose up -d
    ```
 
 6. Visit: `https://local.example.com:8443`
