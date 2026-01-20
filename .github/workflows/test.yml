@@ -6,7 +6,7 @@ on:
   pull_request:
     branches: [main]
 
-vars:
+env:
   DOMAIN: sslproxy.stackpop.com
   HTTP_PORT: 9080
   HTTPS_PORT: 9443
