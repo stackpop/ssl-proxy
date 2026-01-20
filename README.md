@@ -20,8 +20,8 @@ A Dockerized Caddy reverse proxy with automatic SSL certificate generation for l
    HTTPS_PORT=8443
    ```
 
-   > [!WARNING]
-   > `UPSTREAM_URL` must include the scheme and port.
+> [!WARNING]
+> `UPSTREAM_URL` must include the scheme and port.
 
 2. Add your domain to hosts file:
 
