@@ -6,7 +6,7 @@ on:
   pull_request:
     branches: [main]
 
-env:
+vars:
   DOMAIN: sslproxy.stackpop.com
   HTTP_PORT: 9080
   HTTPS_PORT: 9443
@@ -24,21 +24,21 @@ jobs:
           docker run -d --name upstream -p 3000:80 nginx:alpine
           sleep 2
 
-      - name: Create .env
+      - name: Create env file
         run: |
-          echo "DOMAIN=${{ env.DOMAIN }}" > .env
-          echo "HTTP_PORT=${{ env.HTTP_PORT }}" >> .env
-          echo "HTTPS_PORT=${{ env.HTTPS_PORT }}" >> .env
-          echo "UPSTREAM_URL=${{ env.UPSTREAM_URL }}" >> .env
+          echo "DOMAIN=${{ env.DOMAIN }}" > .env.${{ env.DOMAIN }}
+          echo "HTTP_PORT=${{ env.HTTP_PORT }}" >> .env.${{ env.DOMAIN }}
+          echo "HTTPS_PORT=${{ env.HTTPS_PORT }}" >> .env.${{ env.DOMAIN }}
+          echo "UPSTREAM_URL=${{ env.UPSTREAM_URL }}" >> .env.${{ env.DOMAIN }}
 
       - name: Add test domain to hosts
         run: echo "127.0.0.1 ${{ env.DOMAIN }}" | sudo tee -a /etc/hosts
 
       - name: Build images
-        run: docker compose build
+        run: docker compose --env-file .env.${{ env.DOMAIN }} build
 
       - name: Generate certificates
-        run: docker compose --profile setup run --rm mkcert
+        run: docker compose --env-file .env.${{ env.DOMAIN }} --profile setup run --rm mkcert
 
       - name: Verify certificates exist
         run: |
@@ -47,13 +47,13 @@ jobs:
           test -f certs/${{ env.DOMAIN }}.rootCA.pem
 
       - name: Start proxy
-        run: docker compose up -d
+        run: docker compose --env-file .env.${{ env.DOMAIN }} up -d
 
       - name: Wait for Caddy to start
         run: sleep 3
 
       - name: Check Caddy is running
-        run: docker compose ps --status running --services | grep -q '^caddy$'
+        run: docker compose --env-file .env.${{ env.DOMAIN }} ps --status running --services | grep -q '^caddy$'
 
       - name: Test HTTP redirect
         run: |
@@ -64,10 +64,10 @@ jobs:
           curl -s --cacert certs/${{ env.DOMAIN }}.rootCA.pem https://${{ env.DOMAIN }}:${{ env.HTTPS_PORT }} | grep -q "nginx"
       - name: Show logs on failure
         if: failure()
-        run: docker compose logs
+        run: docker compose --env-file .env.${{ env.DOMAIN }} logs
 
       - name: Stop proxy
         if: always()
         run: |
-          docker compose down
+          docker compose --env-file .env.${{ env.DOMAIN }} down
           docker rm -f upstream || true
