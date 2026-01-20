@@ -5,7 +5,10 @@ certs/
 .DS_Store
 
 # env files
-.env
+.env*
+!.env.example
 
-# AI agents
+# Editors
 .claude/
+.idea/
+.vscode/
